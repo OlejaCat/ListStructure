@@ -20,10 +20,14 @@ typedef struct Node
 
 typedef struct List
 {
-    Node*  node_array;
+    Node*       node_array;
 
-    size_t free_node;
-    size_t capacity;
+    size_t      free_node;
+    size_t      capacity;
+
+    const char* file_name;
+    int         line;
+    const char* function_name;
 } List;
 
 static size_t SCALE_FACTOR = 2;
@@ -34,7 +38,7 @@ static ListOperationError listResize(List* list);
 // public --------------------------------------------------------------------------------------------------------------
 
 
-// ------------------------------- INDEX OPERATIONS -------------------------------
+// -------------------------------  INDEX OPERATIONS -------------------------------
 
 
 size_t getNextIndex(List* list, size_t index)
@@ -56,14 +60,17 @@ size_t getPreviousIndex(List* list, size_t index)
 // -------------------------------  CTOR AND DTOR  -------------------------------
 
 
-List* listCtor(size_t capacity)
+List* listCtor_(size_t      capacity,
+                const char* file,
+                int         line,
+                const char* function)
 {
     List* list = (List*)calloc(1, sizeof(List));
 
     list->capacity = capacity;
 
     list->node_array = (Node*)calloc(capacity + 1, sizeof(Node));
-    if (list->node_array)
+    if (list->node_array == NULL)
     {
         return NULL;
     }
@@ -78,14 +85,18 @@ List* listCtor(size_t capacity)
     for (size_t index = 1; index <= capacity; index++)
     {
         list->node_array[index] = {
-            .data = 0,
-            .next = index++,
-            .prev = 0,
+            .data   = 0,
+            .next   = index++,
+            .prev   = 0,
             .in_use = false,
         };
     }
 
     list->free_node = 1;
+
+    list->file_name     = file;
+    list->line          = line;
+    list->function_name = function;
 
     return list;
 }
@@ -99,7 +110,7 @@ ListOperationError listDtor(List* list)
     }
 
     free(list->node_array);
-    memset(list, 0, sizeof(List));
+    free(list);
 
     return ListOperationError_SUCCESS;
 }

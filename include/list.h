@@ -22,7 +22,10 @@ typedef struct List List;
 size_t getNextIndex(List* list, size_t index);
 size_t getPreviousIndex(List* list, size_t index);
 
-List* listCtor(size_t capacity);
+List* listCtor_(size_t      capacity,
+                const char* file,
+                int         line,
+                const char* function);
 ListOperationError listInsert(List* list, size_t index, list_type element);
 ListOperationError listInsertTail(List* list, list_type element);
 ListOperationError listInsertHead(List* list, list_type element);
@@ -31,5 +34,7 @@ ListOperationError listDtor(List* list);
 ListOperationError listDeleteElement(List* list, size_t index);
 ListOperationError listDeleteTail(List* list);
 ListOperationError listDeleteHead(List* list);
+
+#define listCtor(capacity_) listCtor_(capacity_, __FILE__, __LINE__, __PRETTY_FUNCTION__)
 
 #endif // LIST_H
