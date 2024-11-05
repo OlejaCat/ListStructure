@@ -148,14 +148,6 @@ ListOperationError listInsert(List* list, size_t index, list_type element)
     list->node_array[list->node_array[index].next].prev = real_index;
     list->node_array[index].next = real_index;
 
-    for (size_t index_ = 0; index_ <= list->capacity; index_++)
-    {
-        Node node_ = list->node_array[index_];
-
-        printf("%lu: %d, %lu, %lu, %d\n", index_, node_.data, node_.next, node_.prev, node_.in_use);
-    }
-    printf("\n");
-
     return ListOperationError_SUCCESS;
 }
 
