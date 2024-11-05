@@ -61,7 +61,7 @@ ListDumpError dumpList_(List*       list,
 
     fprintf(output_file, "</pre>\n");
 
-    // dumpGraphviz(list);
+    dumpGraphviz(list);
 
     fprintf(output_file, "<img src=\"" LIST_DUMP_PNG_FILE "\" />");
 
@@ -82,8 +82,11 @@ static ListDumpError dumpGraphviz(List* list)
         return ListDumpError_ERROR;
     }
 
-    fprintf(output_file, "digraph G\n");
-    fprintf(output_file, "{\nrankdir=LR;\nnode [shape=record, style=filled, fillcolor=lightblue];\n");
+    fprintf(output_file, "digraph G\n{");
+    fprintf(output_file, "    rankdir=LR;\n");
+    fprintf(output_file, "    bgcolor=\"gray20\";\n");          // Устанавливаем фон графа в серый
+    fprintf(output_file, "    edge [color=white];\n");         // Устанавливаем цвет ребер на белый
+    fprintf(output_file, "    node [shape=record, style=filled, fillcolor=\"#4b4b4b\", fontcolor=white];\n\n");
 
     fprintf(output_file,
             "node0 [label=\"ip: 0 | data: %d | next: %lu | prev: %lu\"];\n",
@@ -95,6 +98,8 @@ static ListDumpError dumpGraphviz(List* list)
     size_t current_index = 0;
     while (list->node_array[current_index].next != 0)
     {
+        current_index = list->node_array[current_index].next;
+
         fprintf(output_file,
                 "node%lu [label=\"ip: %lu | data: %d | next: %lu | prev: %lu\"];\n",
                 size_of_data,
@@ -103,7 +108,6 @@ static ListDumpError dumpGraphviz(List* list)
                 list->node_array[current_index].next,
                 list->node_array[current_index].prev);
 
-        current_index = list->node_array[current_index].next;
         size_of_data++;
     }
 
@@ -116,7 +120,7 @@ static ListDumpError dumpGraphviz(List* list)
         size_t second = (index + 1) % size_of_data;
 
         fprintf(output_file, "node%lu -> node%lu [color=red];\n",  first,  second);
-        fprintf(output_file, "node%lu -> node%lu [color=blue];\n", second, first);
+        fprintf(output_file, "node%lu -> node%lu [color=lightblue];\n", second, first);
     }
 
     if (size_of_data > 1)
@@ -146,17 +150,19 @@ static ListDumpError dumpGraphviz(List* list)
         fprintf(output_file, "free -> node%lu [color=orange]", size_of_free_data);
     }
 
-    for (size_t index = size_of_free_data; index < size_of_data; index++)
+    for (size_t index = size_of_free_data; index < size_of_data - 1; index++)
     {
         fprintf(output_file, "node%lu -> node%lu [color=green];\n", index, index + 1);
     }
 
     fprintf(output_file, "}\n");
 
-    const char* command = "dot -Tpng " TEMP_DOT_FILE_PATH " > " LIST_DUMP_PNG_FILE;
+    fclose(output_file);
+
+    const char* command = "dot -Tpng " TEMP_DOT_FILE_PATH " -o " LIST_DUMP_PNG_FILE;
 
     system(command);
-    // system("rm -f " TEMP_DOT_FILE_PATH);
+    system("rm -f " TEMP_DOT_FILE_PATH);
 
     return ListDumpError_SUCCESS;
 }

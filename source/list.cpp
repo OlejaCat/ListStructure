@@ -1,6 +1,7 @@
 #include "list.h"
 
 #include <string.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
 
@@ -86,7 +87,7 @@ List* listCtor_(size_t      capacity,
     {
         list->node_array[index] = {
             .data   = 0,
-            .next   = index++,
+            .next   = index + 1,
             .prev   = 0,
             .in_use = false,
         };
@@ -147,11 +148,19 @@ ListOperationError listInsert(List* list, size_t index, list_type element)
     list->node_array[list->node_array[index].next].prev = real_index;
     list->node_array[index].next = real_index;
 
+    for (size_t index_ = 0; index_ <= list->capacity; index_++)
+    {
+        Node node_ = list->node_array[index_];
+
+        printf("%lu: %d, %lu, %lu, %d\n", index_, node_.data, node_.next, node_.prev, node_.in_use);
+    }
+    printf("\n");
+
     return ListOperationError_SUCCESS;
 }
 
 
-ListOperationError listInsertTail(List* list, list_type element)
+ListOperationError listInsertHead(List* list, list_type element)
 {
     assert(list != NULL);
 
@@ -161,7 +170,7 @@ ListOperationError listInsertTail(List* list, list_type element)
 }
 
 
-ListOperationError listInsertHead(List* list, list_type element)
+ListOperationError listInsertTail(List* list, list_type element)
 {
     assert(list != NULL);
 
@@ -240,7 +249,7 @@ static ListOperationError listResize(List* list)
     {
         list->node_array[index] = {
             .data   = 0,
-            .next   = index++,
+            .next   = index + 1,
             .prev   = 0,
             .in_use = false,
         };
