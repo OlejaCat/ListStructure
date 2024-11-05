@@ -84,8 +84,8 @@ static ListDumpError dumpGraphviz(List* list)
 
     fprintf(output_file, "digraph G\n{");
     fprintf(output_file, "    rankdir=LR;\n");
-    fprintf(output_file, "    bgcolor=\"gray20\";\n");          // Устанавливаем фон графа в серый
-    fprintf(output_file, "    edge [color=white];\n");         // Устанавливаем цвет ребер на белый
+    fprintf(output_file, "    bgcolor=\"gray20\";\n");          
+    fprintf(output_file, "    edge [color=white];\n");         
     fprintf(output_file, "    node [shape=record, style=filled, fillcolor=\"#4b4b4b\", fontcolor=white];\n\n");
 
     fprintf(output_file,
